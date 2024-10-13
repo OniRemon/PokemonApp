@@ -11,6 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.pokeapp.ui.theme.PokeAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,11 +22,23 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PokeAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                Scaffold(
+                    modifier = Modifier.fillMaxSize()
+                ) { innerPadding ->
+                    val navController = rememberNavController()
+                    NavHost(
+                        navController = navController,
+                        startDestination = ScreenRoute.SearchScreen.route,
                         modifier = Modifier.padding(innerPadding)
-                    )
+                    ) {
+                        composable(route = ScreenRoute.SearchScreen.route) {
+                            SearchScreen(navController = navController)
+                        }
+                        composable(route = "${ScreenRoute.ResultScreen.route}/{id}") { backStackEntry ->
+                            val id = backStackEntry.arguments?.getString("id")
+                            ResultScreen(navController = navController, id = id)
+                        }
+                    }
                 }
             }
         }
